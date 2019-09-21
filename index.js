@@ -8,6 +8,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var validEmailRegex = RegExp(/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i);
+
 var Form = function (_React$Component) {
   _inherits(Form, _React$Component);
 
@@ -22,16 +24,30 @@ var Form = function (_React$Component) {
 
     _this.handleOnSubmit = function (event) {
       event.preventDefault();
-      _this.setState({
-        submitted: true
-      });
+      var valid = _this.validate();
+      if (valid) {
+        _this.setState({
+          validEmail: true
+        });
+      } else {
+        _this.setState({
+          errors: "Invalid email"
+        });
+      }
+    };
+
+    _this.validate = function () {
+      var emailError = validEmailRegex.test(_this.state.email) ? true : false;
+      console.log(emailError);
+      return emailError;
     };
 
     _this.state = {
       firstName: "",
       lastName: "",
       email: "",
-      submitted: false
+      validEmail: false,
+      errors: []
     };
     return _this;
   }
@@ -58,7 +74,8 @@ var Form = function (_React$Component) {
             type: "text",
             name: "firstName",
             placeholder: "First name here",
-            value: this.state.firstName
+            value: this.state.firstName,
+            required: true
           }),
           React.createElement("br", null),
           React.createElement("input", {
@@ -74,7 +91,8 @@ var Form = function (_React$Component) {
             type: "text",
             name: "email",
             placeholder: "Email here",
-            value: this.state.email
+            value: this.state.email,
+            required: true
           }),
           React.createElement("br", null),
           React.createElement(
@@ -83,13 +101,17 @@ var Form = function (_React$Component) {
             "Sign Up!"
           )
         ),
-        this.state.submitted ? React.createElement(
+        this.state.validEmail ? React.createElement(
           "p",
           null,
           "Thank you for signing up ",
           this.state.firstName,
           "!"
-        ) : null
+        ) : React.createElement(
+          "p",
+          null,
+          this.state.errors
+        )
       );
     }
   }]);
